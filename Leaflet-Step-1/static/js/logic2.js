@@ -9,13 +9,27 @@ d3.json(queryUrl, function(data) {
 });
 
 function createFeatures(earthquakeData) {
-    var earthquakes = L.geoJSON(earthquakeData);
-    createMap(earthquakes);
+  
+  console.log(earthquakeData[0].properties.mag);
+
+  // Define a function we want to run once for each feature in the features array
+  // Give each feature a popup describing the place and time of the earthquake
+  function onEachFeature(feature, layer) {
+    layer.bindPopup("<h3>" + "Magnitude: " + feature.properties.mag +
+    "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
+  }
+
+//   Create a GeoJSON layer containing the features array on the earthquakeData object
+//   Run the onEachFeature function once for each piece of data in the array
+  var earthquakes = L.geoJSON(earthquakeData, {
+    onEachFeature: onEachFeature
+  });
+
+  // Sending our earthquakes layer to the createMap function
+  createMap(earthquakes);
 }
 
 function createMap(earthquakes) {
-
-    console.log(earthquakes);
 
     // Define streetmap and darkmap layers
     var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/256/{z}/{x}/{y}?access_token={accessToken}", {
@@ -62,43 +76,48 @@ function createMap(earthquakes) {
         "Outdoors Map": outmap
     };
 
+    // Create overlay object to hold our overlay layer
+    var overlayMaps = {
+        Earthquakes: earthquakes
+    };
+
+    // for (var i = 0; i < earthquakes.length; i++) {
+
+    //     // Conditionals for countries points
+    //     var color = "";
+    //     if (earthquakes[i].properties.mag >= 6) {
+    //         color = "red";
+    //     }
+    //     else if (earthquakes[i].properties.mag >= 5) {
+    //         color = "orange";
+    //     }
+    //     else if (earthquakes[i].properties.mag >= 4.8) {
+    //         color = "yellow";
+    //     }
+    //     else {
+    //         color = "green";
+    //     }
+        
+    //     // Add circles to map
+    //     earthquakeCircles = L.circle([earthquakes[i].geometry.coordinates[1], earthquakes[i].geometry.coordinates[0]], {
+    //         fillOpacity: 0.75,
+    //         color: "white",
+    //         fillColor: color,
+    //         // Adjust radius
+    //         radius: earthquakes[i].properties.mag * 1000
+    //     })
+    // }
+
     // Create our map, giving it the streetmap and earthquakeCircles layers to display on load
     var myMap = L.map("map", {
         center: [39.8283, -98.5795],
-        layers: [outmap]
+        layers: [outmap, earthquakes]
         });
-        
-    for (var i = 0; i < earthquakes.length; i++) {
-
-        // Conditionals for countries points
-        var color = "";
-        if (earthquakes[i].properties.mag >= 6) {
-            color = "red";
-        }
-        else if (earthquakes[i].properties.mag >= 5) {
-            color = "orange";
-        }
-        else if (earthquakes[i].properties.mag >= 4.8) {
-            color = "yellow";
-        }
-        else {
-            color = "green";
-        }
-        
-        // Add circles to map
-        L.circle([earthquakes[i].geometry.coordinates[1], earthquakes[i].geometry.coordinates[0]], {
-            fillOpacity: 0.75,
-            color: "white",
-            fillColor: color,
-            // Adjust radius
-            radius: earthquakes[i].properties.mag * 1000
-        }).addTo(myMap);
-    }
-
+    
     //Create a layer control
     // Pass in our baseMaps and overlayMaps
     // Add the layer control to the map
-    L.control.layers(baseMaps, {
+    L.control.layers(baseMaps, overlayMaps, {
         collapsed: false
     }).addTo(myMap);
 }
