@@ -19,8 +19,9 @@ d3.json(QuakeURL, function (data) {
     // Add circles to map
     earthquakeCircles.push(L.circle([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
       fillOpacity: 0.75,
-      color: "white",
+      color: 'white',
       fillColor: color,
+      weight: 1,
       // Adjust radius
       radius: magnitude * 30000
     }).bindPopup(`<h3> Magnitude: ${magnitude} <hr> 
@@ -35,12 +36,8 @@ d3.json(QuakeURL, function (data) {
 var plateLines = []
     d3.json(PlateURL, function(data) {
         console.log(data.features);
-        // data.features.forEach(function(feature) {
-        //   plateLines.push(L.polyline(feature.geometry.coordinates, {color: 'yellow'}));
-        //   });
-        var plateLayer = L.geoJson(data.features);
+        var plateLayer = L.geoJson(data.features, {color: '#FAEBD7'});
       
-
     console.log(plateLayer);
     // var plateLayer = L.layerGroup(plate);
     var earthquakesLayer = L.layerGroup(earthquakeCircles);
@@ -110,7 +107,7 @@ function createMap(earthquakesLayer, plateLayer) {
   // Create our map, giving it the streetmap and earthquakes layers to display on load
   var myMap = L.map('map', {
     center: [
-      37.09, -105.71
+      37.09, -80.71
     ],
     zoom: 3,
     layers: [satmap, earthquakesLayer, plateLayer]
