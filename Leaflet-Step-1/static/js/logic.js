@@ -110,24 +110,19 @@ function createMap(earthquakesLayer) {
     collapsed: false
   }).addTo(myMap);
 
-  var legend = L.control({position: 'bottomleft'});
+  var legend = L.control({ position: "bottomleft" });
+
+  legend.onAdd = function(map) {
+    var div = L.DomUtil.create("div", "legend");
+    div.innerHTML += "<h4>Magnitude</h4>";
+    div.innerHTML += '<i style="background: red"></i><span>6+</span><br>';
+    div.innerHTML += '<i style="background: orange"></i><span>5-6</span><br>';
+    div.innerHTML += '<i style="background: yellow"></i><span>4-5</span><br>';
+    div.innerHTML += '<i style="background: blue"></i><span>2-4</span><br>';
+    div.innerHTML += '<i style="background: green"></i><span>0-2</span><br>';
   
-  legend.onAdd = function (map) {
-
-  var div = L.DomUtil.create('div', 'info legend');
-  labels = ['<strong>Magnitude</strong>'],
-  categories = ['0-2','2-4','4-5','5-6','6+'];
-
-  for (var i = 0; i < categories.length; i++) {
-
-          div.innerHTML += 
-          labels.push(
-              '<i class="circle" style="background:' + getColor(categories[i]) + '"></i> ' +
-          (categories[i] ? categories[i] : '+'));
-
-      }
-      div.innerHTML = labels.join('<br>');
-  return div;
+    return div;
   };
+  
   legend.addTo(myMap);
 };
