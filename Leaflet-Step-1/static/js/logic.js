@@ -1,8 +1,9 @@
 // Store our API endpoint inside url
-var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+var QuakeURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+var PlateURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
 // Perform a GET request to the URL for earthquake data
-d3.json(url, function (data) {
+d3.json(QuakeURL, function (data) {
 
   console.log(data.features);
 
@@ -29,10 +30,22 @@ d3.json(url, function (data) {
 
     // console.log(color);
     // console.log(earthquakeCircles);
-  // send data.features to createEarthquakeFeatures function
 });
-var earthquakesLayer = L.layerGroup(earthquakeCircles);
-createMap(earthquakesLayer);
+
+var plateLines = []
+    d3.json(PlateURL, function(data) {
+        console.log(data.features);
+        // data.features.forEach(function(feature) {
+        //   plateLines.push(L.polyline(feature.geometry.coordinates, {color: 'yellow'}));
+        //   });
+        var plateLayer = L.geoJson(data.features);
+      
+
+    console.log(plateLayer);
+    // var plateLayer = L.layerGroup(plate);
+    var earthquakesLayer = L.layerGroup(earthquakeCircles);
+    createMap(earthquakesLayer, plateLayer);
+      });
 });
 
 function getColor(magnitude) {
@@ -55,8 +68,9 @@ function getColor(magnitude) {
   }
 }
 
-function createMap(earthquakesLayer) {
+function createMap(earthquakesLayer, plateLayer) {
 
+  console.log(plateLayer);
   console.log(earthquakesLayer);
   // Define satellite map, dark map, and outdoors map layers
   var satmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/256/{z}/{x}/{y}?access_token={accessToken}", {
@@ -90,6 +104,7 @@ function createMap(earthquakesLayer) {
   // Create overlay object to hold our overlay layer
   var overlayMaps = {
     Earthquakes: earthquakesLayer,
+    'Tectonic Plates': plateLayer
   };
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
@@ -98,7 +113,7 @@ function createMap(earthquakesLayer) {
       37.09, -105.71
     ],
     zoom: 3,
-    layers: [satmap, earthquakesLayer]
+    layers: [satmap, earthquakesLayer, plateLayer]
   });
 
   // earthquakesLayer.addTo(myMap);
