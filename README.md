@@ -16,5 +16,5 @@ Tools & Languages Used:
 
 Below are screenshots from the application in use.
 
-![All Dark](leaflet-challenge/Earthquakes&Plates_Leaflet/Screenshots/All_Dark.png)
+![All Dark](Earthquakes&Plates_Leaflet/Screenshots/All_Dark.png)
 
